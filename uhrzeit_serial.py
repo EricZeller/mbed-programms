@@ -1,7 +1,8 @@
 import serial
 import time
 
-ser = serial.Serial('COM9', 9600)  # COM9 durch den entsprechenden COM-Port ersetzen
+ser = serial.Serial('/dev/ttyACM0', 9600)  # COM9 durch den entsprechenden COM-Port ersetzen
+last_time = ""
 
 try:
     while True:
@@ -9,9 +10,12 @@ try:
         if ser.read() == b'?':
             current_time = time.strftime("%H:%M:%S")  # Aktuelle Uhrzeit als String erhalten, z.B. '17:48:30'
             ser.write(current_time.encode())  # Die Uhrzeit als Zeichen an das Mbed-Gerät senden
-            print(current_time)
-        time.sleep(0.01)  # Eine kurze Pause, um den Code nicht zu schnell auszuführen
+            if last_time != current_time:
+                last_time = current_time
+                print("\n" + current_time, end = "", flush=True)
+            print(".", end="", flush=True)
 
+    pass
 except KeyboardInterrupt:
     pass
 
